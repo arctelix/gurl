@@ -1,0 +1,267 @@
+#!/bin/bash
+
+# g for gurl - A shortcut and alias wrapper around git
+#
+# Author: arctelix@gmail.com
+# Licence: MIT
+
+
+_gurl () {
+
+    # This array is split on '=' for regex/url
+    # Correct formatting is REQUIRED see _grul
+    local endpoints=(
+        'gh|github=https://github.com/<user>/<repo>'
+        'bb|bitbucket=https://<user>@bitbucket.org/<user>/<repo>'
+        'hr|heroku=https://git.heroku.com/<repo>'
+    )
+    endpoints+=( "${GURL_ENDPOINTS[@]}" )
+
+    local useage="
+    \rusage: gurl [-h] [-s] [-uq] [<git commands & options>]
+    \r             <server> [<user>/]<repo>
+    \r
+    \rNOTE: omit '<user>/' for .gitignore user.name
+    \r
+    \roptions:
+    \r
+    \r    -h | help      Display gurl and git help
+    \r    -e | endpoints Display list of endpoints
+    \r    -q             Do not output messages
+    \r    -u             Returns a converted endpoint url
+    \r                   > gurl -u <server> [<user>/]<repo>\n"
+
+    local help="
+    \r======================================================
+    \rgurl - A shortcut and alias wrapper around git
+    \r------------------------------------------------------
+    \rUse 'gurl' as a general replacement for git and
+    \rwherever git expects a url to a git endpoint the gurl
+    \rendpoint syntax may be used: <server> [<user>/]<repo>
+    \r$useage
+    \rendpoints:
+    \r
+    \r$(printf "    %s\n" "${endpoints[@]}")
+    \r
+    \r    Extend the built in endpoints with your own
+    \r    by adding them to a GURL_ENDPOINTS array in
+    \r    your shell's rc file.  Each endpoint takes the
+    \r    the form 'regex=url'.  All occurrences of
+    \r    <user> & <repo> in the url will be replaced
+    \r    during command execution.
+    \r
+    \rAliases:
+    \r
+    \r    gurl cl  = gurl clone
+    \r    gurl re  = gurl remote
+    \r    gurl ra  = gurl remote add
+    \r    gurl rs  = gurl remote show
+    \r
+    \r    Add add the following line to your shell's rc
+    \r    file to enable gurl aliases: 'source gurl -q'
+    \r
+    \r    g     = gurl
+    \r    gc    = gurl clone
+    \r    gra   = gurl remote add
+    \r    grs   = gurl remote show
+    \r    grao  = gurl remote add origin
+    \r    grah  = gurl remote add heroku hr
+    \r    gu    = gurl -qu
+    \r
+    \r    gurl is totally cool with .gitconfig aliases
+    \r    > git config alias.c clone
+    \r    > gurl c gh <repo>
+    \r
+    \rEquivalent examples if <user> = config user.name:
+    \r
+    \r    # Git clone
+    \r    > git clone https://github.com/<user>/<repo>
+    \r    > gurl clone gh <user>/<repo>
+    \r    # Git clone ith aliases
+    \r    > gurl cl gh <repo>
+    \r    > gc gh <repo>
+    \r
+    \r    # Git remote add
+    \r    > git remote add origin https://github.com/<user>/<repo>
+    \r    > gurl remote add origin <user>/<repo>
+    \r    > gurl ra origin <repo>
+    \r    # Git remote add with aliases
+    \r    > gra origin <repo>
+    \r    > grao <repo>
+    \r
+    \r======================================================
+    \n"
+
+    # Convert help when called as g
+    if [ "$1" = "--gforgurl" ] ;then
+        useage="${useage//gurl/g}"
+        help="${help//gurl/g}"
+        help="${help/g -/g for gurl -}"
+        shift
+    fi
+
+    local url url_converted args cmd alias_val
+    local first_arg="$1"
+    local url_only quiet opt
+
+    # Check for git config aliases
+    local alias_val="$(git config "alias.$1" 2>/dev/null)"
+    if [ "$alias_val" ]; then first_arg="$alias_val"; fi
+
+    args=()
+
+    case "$first_arg" in
+        # Catch git commands with urls
+        clone | cl)             args+=( "clone" ); shift ;;
+        remote | re )           args+=( "remote" ); shift ;;
+        rs )                    args+=( "remote show" ); shift ;;
+        ra )                    args+=( "remote add" ); shift ;;
+        -h | help | --help )    printf "$help";;
+        -e | endpoints)         printf "$endpoints" ; return ;;
+
+        # options
+        -* )                    opts=${1#-}; shift
+        # parse letter options
+        for i in $(seq 1 ${#opts});do
+            case ${opts:i-1:1} in
+            u )                 url_only=true;;
+            q )                 quiet=true;;
+            esac
+        done;;
+    esac
+
+    # No args supplied show help
+    if ! [ "$args" ] && ! [ "$1" ]; then
+        [ ! "$quiet" ] && printf "$help"
+        return
+
+    # no applicable args, bypass gurl and execute git
+    elif ! [ "$args" ]; then
+        git "$@"
+        return
+    fi
+
+    # add shifted args to cmd for execution
+    cmd=( ${args[*]} )
+
+    # Required regex matches
+    local re_clone="clone$"
+    local re_r_add="remote\ add\ [[:alpha:][:digit:]]+$"
+    local re_r_seturl="remote\ set-url\ [[:alpha:][:digit:]]+$"
+
+    # Collect additional args and check for url
+    while [[ $# > 0 ]] ; do
+
+        #echo "$1 -> ${cmd[*]}" 1>&2
+
+        # if cmd matches and not a url use _gurl
+        if [ "$url_only" ] || [[ "${cmd[*]}" =~ $re_clone|$re_r_add|$re_r_seturl ]]; then
+
+            # Use existing url
+            if [[ "$1" =~ .*://.* ]]; then
+                url="$1"
+
+            # Convert shorthand to url
+            else
+                url="$(_gurl_url "$1" "$2")"
+                url_converted=$?
+
+                if [ $url_converted -ne 0 ]; then
+                    [ ! "$quiet" ] && printf "$useage"
+                    return $url_converted
+
+                elif [ "$url" ]; then
+                    shift; shift;
+                fi
+
+            fi
+        fi
+
+        # build full cmd for execution
+        args+=( "${url:-$1}" )
+
+        # build cmd without options for regex match
+        if ! [[ "$1" = "-"* ]]; then cmd+=( "$1" ); fi
+
+        shift
+    done
+
+    [ "$url_only" ] && echo "$url" && return $url_converted
+
+    # Execute git command
+    git "${args[@]}"
+
+    # Check for errors
+    if [ $? -ne 0 ] && [ "$url_converted" ]; then
+        echo "gurl executed: git ${args[@]}" 1>&2
+    fi
+}
+
+# Returns a full url to a repo using endpoints shortcuts
+_gurl_url () {
+    local url user repo s_regex s_url
+
+    # parse user/repo
+    user="${2%/*}"
+    repo="${2#*/}"
+
+
+    # Check for user/repo or get user from config
+    if [[ "$2" != *"/"* ]]; then
+        user="$(git config user.name)"
+        if [ $? -ne 0 ]; then
+            printf "gurl error: You must specify 'user/repo' or set
+                  \r            'git config user.name'" 1>&2;
+            return 1
+
+        fi
+    fi
+
+    # Match endpoints and replace with a full url
+    # Endpoints strings are split on '=' for regex=url
+    #   url occurrences of <user> are replaced with $user
+    #   url occurrences of <repo> are replaced with $repo
+    for s in ${endpoints[@]}; do
+        s_regex="${s%=*}"
+        s_url="${s#*=}"
+        #echo "checking pattern $s_pat" 1>&2
+        if [[ "$1" =~ $s_regex ]]; then
+            url="${s_url//\<user\>/$user}"
+            url="${url//\<repo\>/$repo}"
+            break
+        fi
+    done
+
+    # Return url or error
+    if [ "$url" ]; then
+        [ ! "$quiet" ] && echo "gurl $quiet: $url" 1>&2
+        # return converted url
+        echo "$url.git"
+        return 0
+    else
+        [ ! "$quiet" ] && printf "gurl error: $1 is not a valid endpoint, try:\n" 1>&2
+        [ ! "$quiet" ] && printf "    %s\n" "${endpoints[@]}" 1>&2
+        return 1
+    fi
+
+
+}
+
+# g for gurl shortcut
+g () {
+    gurl --gforgurl "$@"
+}
+
+alias gc='g clone'
+alias gra='g remote add'
+alias grs='g remote show'
+alias grao='g remote add origin'
+alias grah='g remote add heroku hr'
+alias gu='g -qu'
+
+# command called (not sourced)
+if echo "$0" | grep -q 'gurl'; then
+    _gurl "$@"
+fi
+
+
