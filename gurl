@@ -18,18 +18,18 @@ _gurl () {
     endpoints+=( "${GURL_ENDPOINTS[@]}" )
 
     local useage="
-    \rusage: gurl [-h] [-s] [-uq] [<git commands & options>]
+    \rusage: gurl [help] [endpoints] [-uq] [<git commands>]
     \r             <server> [<user>/]<repo>
     \r
-    \rNOTE: omit '<user>/' for .gitignore user.name
+    \rNOTE: Omit '<user>/' for .gitignore user.name
     \r
-    \roptions:
+    \roptions: Must immediately follow gurl or g command
     \r
-    \r    -h | help      Display gurl and git help
-    \r    -e | endpoints Display list of endpoints
-    \r    -q             Do not output messages
-    \r    -u             Returns a converted endpoint url
-    \r                   > gurl -u <server> [<user>/]<repo>\n"
+    \r    help          Display gurl and git help
+    \r    endpoints     Display list of endpoints
+    \r    -q            Do not output messages
+    \r    -u            Returns a converted endpoint url
+    \r                  > gurl -u <server> [<user>/]<repo>\n"
 
     local help="
     \r======================================================
@@ -56,6 +56,9 @@ _gurl () {
     \r    gurl re  = gurl remote
     \r    gurl ra  = gurl remote add
     \r    gurl rs  = gurl remote show
+    \r    gurl rr  = gurl remote remove
+    \r    gurl rsu = remote set-url
+    \r    gurl rgu = remote get-url
     \r
     \r    Add add the following line to your shell's rc
     \r    file to enable gurl aliases: 'source gurl -q'
@@ -64,6 +67,7 @@ _gurl () {
     \r    gc    = gurl clone
     \r    gra   = gurl remote add
     \r    grs   = gurl remote show
+    \r    grr   = gurl remote show
     \r    grao  = gurl remote add origin
     \r    grah  = gurl remote add heroku hr
     \r    gu    = gurl -qu
@@ -112,10 +116,14 @@ _gurl () {
 
     case "$first_arg" in
         # Catch git commands with urls
-        clone | cl)             args+=( "clone" ); shift ;;
-        remote | re )           args+=( "remote" ); shift ;;
-        rs )                    args+=( "remote show" ); shift ;;
-        ra )                    args+=( "remote add" ); shift ;;
+        clone | cl)             args+=( clone ); shift ;;
+        remote | re )           args+=( remote ); shift ;;
+        rs )                    args+=( remote show ); shift ;;
+        ra )                    args+=( remote add ); shift ;;
+        rsu )                   args+=( remote set-url ); shift ;;
+        rgu )                   args+=( remote get-url ); shift ;;
+        rr )                    args+=( remote remove ); shift ;;
+
         -h | help | --help )    printf "$help";;
         -e | endpoints)         printf "$endpoints" ; return ;;
 
@@ -136,7 +144,7 @@ _gurl () {
         return
 
     # no applicable args, bypass gurl and execute git
-    elif ! [ "$args" ]; then
+    elif ! [ "$args" ] && ! [ "$opts" ]; then
         git "$@"
         return
     fi
@@ -234,10 +242,17 @@ _gurl_url () {
 
     # Return url or error
     if [ "$url" ]; then
-        [ ! "$quiet" ] && echo "gurl $quiet: $url" 1>&2
+
+        # add .git extension
+        [ ! "$url_only" ] && url="$url.git"
+
+        # output generated url to stderr as a confirmation
+        [[ ! "$quiet" && ! "$url_only" ]] && echo "gurl : $url" 1>&2
+
         # return converted url
-        echo "$url.git"
+        echo "$url"
         return 0
+
     else
         [ ! "$quiet" ] && printf "gurl error: $1 is not a valid endpoint, try:\n" 1>&2
         [ ! "$quiet" ] && printf "    %s\n" "${endpoints[@]}" 1>&2
@@ -255,6 +270,7 @@ g () {
 alias gc='g clone'
 alias gra='g remote add'
 alias grs='g remote show'
+alias grr='g remote remove'
 alias grao='g remote add origin'
 alias grah='g remote add heroku hr'
 alias gu='g -qu'
