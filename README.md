@@ -1,5 +1,8 @@
 # G for GURL - A git wrapper with url shortcuts
 
+Use 'g' for 'gurl' as a general replacement for git except that wherever git 
+expects a url you can use the gurl endpoint syntax: \<server\> [\<user\>/]\<repo\>
+
 ### Are you sick of typing out full urls for your git repos?
 
     > git clone https://github.com/user/repo_name
@@ -10,10 +13,6 @@
     > gc gh repo_name
     > gra hr repo_name
 
-Use 'g' for 'gurl' as a general replacement for git except that wherever git 
-expects a url you can use the gurl endpoint syntax: <server> [<user>/]<repo>
- 
- 
 ## usage: 
 
 gurl [help] [endpoints] [-uq] [<git commands>] \<server\> [\<user\>/]\<repo\>
