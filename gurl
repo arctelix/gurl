@@ -53,25 +53,25 @@ _gurl () {
     \r
     \rAliases:
     \r
-    \r    cl    = clone
+
     \r    re    = remote
     \r    ra    = remote add
     \r    rs    = remote show
     \r    rr    = remote remove
     \r    rao   = remote add origin
     \r    rsu   = remote set-url
-    \r    gu    = remote get-url
-    \r    lg    = log --graph #plus formatting
-    \r    last  = log -1 --stat
+    \r    rgu   = remote get-url
+    \r    cl    = clone
     \r    cp    = cherry-pick
     \r    co    = checkout
-    \r    cl    = clone
     \r    ci    = commit
-    \r    cm    = commit
+    \r    cm    = commit -am
     \r    st    = status
     \r    br    = branch
     \r    us    = reset HEAD --
     \r    dc    = diff --cached
+    \r    lg    = log --graph #plus formatting
+    \r    last  = log -1 --stat
     \r
     \r    gurl is totally cool with .gitconfig aliases
     \r    > git config alias.c clone
@@ -166,7 +166,6 @@ _gurl () {
         case "$1" in
 
             # gurl aliases
-            cl )        arg=( clone ) ;;
             re )        arg=( remote ) ;;
             rs )        arg=( remote show ) ;;
             ra )        arg=( remote add ) ;;
@@ -174,18 +173,17 @@ _gurl () {
             rao )       arg=( remote add origin ) ;;
             rsu )       arg=( remote set-url ) ;;
             rgu )       arg=( remote get-url ) ;;
-
-            lg )        arg=( log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %Cblue<%an>%Creset' --abbrev-commit --date=relative --all ) ;;
-            last )      arg=( log -1 --stat ) ;;
+            cl )        arg=( clone ) ;;
             cp )        arg=( cherry-pick ) ;;
             co )        arg=( checkout ) ;;
-            cl )        arg=( clone ) ;;
             ci )        arg=( commit ) ;;
             cm )        arg=( commit -am ) ;;
             st )        arg=( status -sb ) ;;
             br )        arg=( branch ) ;;
             us )        arg=( reset HEAD -- ) ;;
             dc )        arg=( diff --cached ) ;;
+            lg )        arg=( log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %Cblue<%an>%Creset' --abbrev-commit --date=relative --all ) ;;
+            last )      arg=( log -1 --stat ) ;;
 
             # Check for git config aliases
             * )         alias_val="$(git config "alias.$1" 2>/dev/null)"

@@ -44,7 +44,7 @@ Quiet mode, disables gurl messages
 Url mode, output converted url
 
     # Download gurl from github with curl
-    curl -LO "$(gurl -u gh actelix/gurl)/archive/master.zip)"
+    curl -LO "$(gurl -u gh actelix/gurl)/archive/master.tar.gz"
     
 
 ## Endpoint Syntax
@@ -73,25 +73,25 @@ during command execution.
 
 ## Aliases built into gurl:
 
-cl    = gurl clone
-re    = gurl remote
-ra    = gurl remote add
-rs    = gurl remote show
-rr    = gurl remote remove
+
+re    = remote
+ra    = remote add
+rs    = remote show
+rr    = remote remove
 rao   = remote add origin
-rsu   = gurl remote set-url
-rgu   = gurl remote get-url
-lg    = log --graph #plus formatting
-last  = log -1 --stat
+rsu   = remote set-url
+rgu   = remote get-url
+cl    = clone
 cp    = cherry-pick
 co    = checkout
-cl    = clone
 ci    = commit
-cm    = commit
+cm    = commit -am
 st    = status
 br    = branch
 us    = reset HEAD --
 dc    = diff --cached
+lg    = log --graph #plus formatting
+last  = log -1 --stat
 
 gurl is totally cool with .gitconfig aliases
 
