@@ -51,11 +51,15 @@ Url mode, output converted url
 
 An endpoint is made up of \<server\> [\<user\>/]\<repo\>
 
+
 ### Builtin endpoint servers
 
 github | gh 
+
 bitbucket | bb 
+
 heroku | hr   
+
 
 ### Extending endpoint servers
 
@@ -74,26 +78,26 @@ during command execution.
 ## Aliases built into gurl:
 
 
-re    = remote
-ra    = remote add
-rs    = remote show
-rr    = remote remove
-rao   = remote add origin
-rsu   = remote set-url
-rgu   = remote get-url
-cl    = clone
-cp    = cherry-pick
-co    = checkout
-ci    = commit
-cm    = commit -am
-st    = status
-br    = branch
-us    = reset HEAD --
-dc    = diff --cached
-lg    = log --graph #plus formatting
-last  = log -1 --stat
+re    = remote <br>
+ra    = remote add <br>
+rs    = remote show <br>
+rr    = remote remove <br>
+rao   = remote add origin <br>
+rsu   = remote set-url <br>
+rgu   = remote get-url <br>
+cl    = clone <br>
+cp    = cherry-pick <br> 
+co    = checkout <br>
+ci    = commit <br>
+cm    = commit -am <br>
+st    = status <br>
+br    = branch <br>
+us    = reset HEAD -- <br>
+dc    = diff --cached <br>
+lg    = log --graph #plus formatting <br>
+last  = log -1 --stat <br>
 
-gurl is totally cool with .gitconfig aliases
+NOTE: gurl is totally cool with .gitconfig aliases
 
     > git config alias.c clone
     > gurl c gh <repo>
@@ -106,16 +110,17 @@ to enable g for gurl aliases:
 
     'source gurl -q'
 
+
 ## Aliases with G for Gurl installed:
 
-g     = gurl
-gc    = gurl clone
-gra   = gurl remote add
-grs   = gurl remote show
-grr   = gurl remote remove
-grao  = gurl remote add origin
-grah  = gurl remote add heroku hr
-gu    = gurl -qu
+g     = gurl <br>
+gc    = gurl clone <br>
+gra   = gurl remote add <br>
+grs   = gurl remote show <br>
+grr   = gurl remote remove <br>
+grao  = gurl remote add origin <br>
+grah  = gurl remote add heroku hr <br>
+gu    = gurl -qu <br>
 
 
 ## EXAMPLE USAGE: 
