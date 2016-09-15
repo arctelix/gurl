@@ -108,7 +108,7 @@ NOTE: gurl is totally cool with .gitconfig aliases
 Add add the following line to your shell's rc file 
 to enable g for gurl aliases: 
 
-    'source gurl -q'
+    source gurl -q
 
 
 ## Aliases with G for Gurl installed:
