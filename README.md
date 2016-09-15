@@ -51,15 +51,15 @@ Url mode, output converted url
 
 An endpoint is made up of \<server\> [\<user\>/]\<repo\>
 
-### Builtins endpoint servers
+### Builtin endpoint servers
 
-github \| gh 
-bitbucket \| bb 
-heroku \| hr   
+github | gh 
+bitbucket | bb 
+heroku | hr   
 
 ### Extending endpoint servers
 
-Extend the built servers by adding a GURL_ENDPOINTS array
+Extend the built in servers by adding a GURL_ENDPOINTS array
 to your shell's rc file.  Each endpoint takes the
 the form 'regex=url'.  
 
