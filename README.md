@@ -1,47 +1,53 @@
-# G for GURL - A git wrapper with url shortcuts
+# G for GURL - A git wrapper with url shortcuts and more
 
-Use 'g' for 'gurl' as a general replacement for git except that wherever git 
-expects a url you can use the gurl endpoint syntax: \<server\> [\<user\>/]\<repo\>
+Use 'g' for 'gurl' as a general replacement for git.  All git commands will work
+exactly as they should with the added benefits of gurl. 
+
+Gurl allows us to use endpoint shortcuts wherever git expects a url as well as
+some additional git aliases.  Add g for gurl shortcuts to your shell's rc file
+for total git bliss and save hundreds of keystrokes per day.
 
 ### Are you sick of typing out full urls for your git repos?
 
     > git clone https://github.com/user/repo_name
     > git remote add heroku https://git.heroku.com/repo_name
     
-### Wouldn't it be great if you could do this instead?
+### Now the same commands exicuted with gurl..
 
     > gc gh repo_name
     > gra hr repo_name
 
 ## usage: 
 
-gurl [help] [endpoints] [-uq] [<git commands>] \<server\> [\<user\>/]\<repo\>
+gurl [help] [endpoints] [-uq] [\<git commands\>] \<server\> [\<user\>/]\<repo\>
 
 NOTE: Omit '\<user\>/' for .gitignore user.name
-
 
 ## options: 
 
 Must immediately follow gurl or g command
 
 **help** : 
-With no args following displays gurl and git help 
-Otherwise use exactly how you would use git help
+Display help for gurl and git.
+Works the same as git help.
 
-**endpoints** : 
-Diplay a list of available endpoints
+**list** : 
+List available endpoints
+
+**-t** : 
+Test mode, output git command without execution
 
 **-q** : 
 Quiet mode, disables gurl messages
     
 **-u <server\> [\<user\>/]\<repo\>** : 
-Output url from endpoint
+Url mode, output converted url
 
     # Download gurl from github with curl
-    curl -LO "$(gurl -u gh gurl)/archive/master.zip"
+    curl -LO "$(gurl -u gh actelix/gurl)/archive/master.zip)"
     
 
-## Endpoints
+## Endpoint Syntax
 
 An endpoint is made up of \<server\> [\<user\>/]\<repo\>
 
@@ -67,13 +73,25 @@ during command execution.
 
 ## Aliases built into gurl:
 
-gurl cl  = gurl clone
-gurl re  = gurl remote
-gurl ra  = gurl remote add
-gurl rs  = gurl remote show
-gurl rr  = gurl remote remove
-gurl rsu = gurl remote set-url
-gurl rgu = gurl remote get-url
+cl    = gurl clone
+re    = gurl remote
+ra    = gurl remote add
+rs    = gurl remote show
+rr    = gurl remote remove
+rao   = remote add origin
+rsu   = gurl remote set-url
+rgu   = gurl remote get-url
+lg    = log --graph #plus formatting
+last  = log -1 --stat
+cp    = cherry-pick
+co    = checkout
+cl    = clone
+ci    = commit
+cm    = commit
+st    = status
+br    = branch
+us    = reset HEAD --
+dc    = diff --cached
 
 gurl is totally cool with .gitconfig aliases
 
@@ -81,10 +99,14 @@ gurl is totally cool with .gitconfig aliases
     > gurl c gh <repo>
 
 
-## Aliases with G for Gurl installed:
+## Optional install G for Gurl:
 
-Add add the following line to your shell's rc
-file to enable g aliases: 'source gurl -q'
+Add add the following line to your shell's rc file 
+to enable g for gurl aliases: 
+
+    'source gurl -q'
+
+## Aliases with G for Gurl installed:
 
 g     = gurl
 gc    = gurl clone
@@ -122,4 +144,7 @@ Git remote add with g
     > gra origin <repo>
     > grao <repo>
 
-
+### Coming soon:
+    
+More great git shortcuts will be added soon
+    
