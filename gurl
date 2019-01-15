@@ -21,7 +21,7 @@ _gurl () {
     \rUsage: gurl [help] [list] [-uqt] [<git commands>]
     \r             <server> [<user>/]<repo>
     \r
-    \r       * Omit '<user>/' for .gitignore user.name
+    \r       * Omit '<user>/' to use git config user.name
     \r
     \rOptions: Must immediately follow gurl command
     \r
@@ -224,8 +224,8 @@ _gurl () {
         # or cmd matches regex requirements for url conversion
         if [[ "$url_only" ]] || [[ "${match[*]}" =~ $re_clone|$re_r_add|$re_r_seturl ]]; then
 
-            # Use existing url
-            if [[ "$1" =~ .*://.* ]]; then
+            # Use existing url or ssh
+            if [[ "$1" =~ .*://.* ]] || [[ "$1" =~ git@.* ]]; then
                 url="$1"
 
             # Convert shorthand to url
@@ -340,6 +340,3 @@ alias gu='g -qu'
 if echo "$0" | grep -q 'gurl'; then
     _gurl "$@"
 fi
-
-
-
